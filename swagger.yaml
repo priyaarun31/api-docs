@@ -1,718 +1,1674 @@
----
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  title: Upstox trading API interface
+  version: 1.0.0
+  description: "Upstox REST APIs makes trading simple, affordable, and accessible. Using them, you can build your own trading application with winning strategies. You can connect to stock market directly, get high-speed market data on tick basis (up to 5 updates per second mainly required for Nifty and BankNifty), and place orders realtime. We use Amazon Webservices to provide you uninterrupted service even on peak market activities. You also get live socket connection for instant notification and updates. <br> <br> Upstox offers two types of APIs to developers: <br> 1) **Interactive** order management APIs that offers details of orders, positions, holdings, price, quantity, etc. <br> 2) **Historical** API offers Open, High, Low, and Close (OHLC) data for different time intervals ranging from one min to one month."
+servers:
+  - url: https://api.upstox.com
 paths:
-  /pet/{petId}/uploadImage:
-    post:
+  /live/orders/{orderNumber}:
+    get:
       tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
+        - order-controller
+      summary: "Get order details, by order number"
+      description: "Gets order details along with their states - open, pending, and filled. <br> **Note**: The order placed is transient for a day and is cleared by the end of the trading session"
+      operationId: orderDetails
       parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
           schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+        - name: orderNumber
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseListOrderDetailsModel'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
     put:
       tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
+        - order-controller
+      summary: "Update order"
+      description: "Updates Open and Pending orders. You may update the order quantity, price and/or order type. With order_id you need to send the optional parameters that needs to be modified. In case the optional parameters aren’t sent, the default value is considered from the original order. <br> **Note**: `exchange`, `symbol`, and `side` cannot be modified"
+      operationId: updateOrder
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
+            type: string
+        - name: orderNumber
+          in: path
+          required: true
           schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequestModelUpdateOrderModel'
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
       responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseString'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
     delete:
       tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
+        - order-controller
+      summary: "Cancel order"
+      description: "Cancels an order in Open and Pending status. The primary use case is to cancel an open AMO or regular order or to Exit a CO (cover order or multi-legged order) or OCO (bracket order)"
+      operationId: cancelOrder
       parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+        - name: orderNumber
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseString'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/orders:
+    get:
+      tags:
+        - order-controller
+      summary: "Get order book"
+      description: "Order book (also called order history) lists all the orders that are placed and includes all states - open, pending, and filled. In addition, it returns all orders of the day and AMO orders (if any) from the previous day with their latest states - open, cancelled, and filled. <br> **Note**: Orders placed by a user is transient for a day and is cleared by the end of the trading session."
+      operationId: orderBook
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseListOrderHistoryModel'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
     post:
       tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+        - order-controller
+      summary: "Place order"
+      description: "Places an order to the exchange via Upstox"
+      operationId: placeOrder
       parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderReqModelPlaceOrderModel'
+        required: true
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseString'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /index/oauth/token:
+    post:
+      tags:
+        - access-controller
+      summary: Get token
+      description: Gets access token
+      operationId: opaqueToken
+      parameters:
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseRequestBodyOpaqueTokenRequestBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponse'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/trade-book:
     get:
       tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
+        - order-controller
+      summary: "Get trade book"
+      description: "An order may be executed in multiple slots (referred to as legs). Each execution is referred as a trade. So, an order may have one or more trades. <br> This endpoint lists all trades for the current day. <br> **Note**: Trade book gets all transactions that are completed and excludes cancelled or pending orders."
+      operationId: tradeBook
       parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseListTradeBookModel'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/profile/positions:
     get:
       tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
+        - profile-controller
+      summary: "Get positions"
+      description: "Gets current positions of a user for the current day. <br> **Note**: Holdings contain portfolio of users delivery based equity stocks. They remain in holdings until the user sells or the stock gets delisted"
+      operationId: getPositions
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
           schema:
-            type: "object"
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: >-
+                  #/components/schemas/BaseSuccessResponseListPositionResponseModel
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/profile/holdings:
+    get:
+      tags:
+        - profile-controller
+      summary: Get holdings
+      description: "Gets holdings that the user has bought or sold in the previous trading sessions. <br> **Note**: Holdings contains portfolio of user's delivery-based equity stocks. They remain in holdings until they are sold or the stock gets delisted."
+      operationId: getHoldings
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: >-
+                  #/components/schemas/BaseSuccessResponseListHoldingsResponseModel
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/profile/balance/security:
+    get:
+      tags:
+        - profile-controller
+      summary: "Get security balance"
+      description: "Gets the balance 'funds' and 'margins' available and used by the user in the equity market."
+      operationId: getSecurityBalance
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: >-
+                  #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/profile/balance/com:
+    get:
+      tags:
+        - profile-controller
+      summary: "Get commodity balance"
+      description: "Gets the balance - 'funds' and 'margins' available and used by the user in the commodity market"
+      operationId: getCommodityBalance
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: >-
+                  #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/profile/balance/all:
+    get:
+      tags:
+        - profile-controller
+      summary: "Get all balance - commodity and equity"
+      description: "Gets the funds and margins available and used by the user in both the equity and commodity market."
+      operationId: getAllBalance
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: >-
+                  #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /live/orders/{order-id}/trades:
+    get:
+      tags:
+        - order-controller
+      summary: Get trade details, by order-id
+      description: "An order may be executed in multiple slots (referred to as legs). Each execution is referred as a trade. As a result, an order may have one or more trades. <br> This endpoint lists all the trades for the given order."
+      operationId: orderTrades
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+        - name: order-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseListOrderTradesModel'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /index/profile:
+    get:
+      tags:
+        - profile-controller
+      summary: Get user profile
+      description: "Gets the basic contact details along with the exchanges and products enabled for the user."
+      operationId: getProfile
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponseProfileResponseModel'
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /index/dialog/authorize:
+    get:
+      tags:
+        - access-controller
+      summary: Authorize user
+      description: "Supports OAuth authorization"
+      operationId: authorize
+      parameters:
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Successful Operation
+        '401':
+          description: Authorization Failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseErrorResponse'
+  /historical/{exchange}/{symbol}/{interval}:
+    get:
+      tags:
+        - history-controller
+      summary: Get historical data
+      description: "Gets open, close, high, and Low data for different time intervals ranging from one min to one month."
+      operationId: getHistory
+      parameters:
+        - name: security
+          in: header
+          required: true
+          description: "Bearer token"
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: true
+          description: "x-api-key"
+          schema:
+            type: string
+        - name: exchange
+          in: path
+          required: true
+          description: "Exchange name"
+          schema:
+            type: string
+        - name: symbol
+          in: path
+          description: "Symbol of the instrument"
+          required: true
+          schema:
+            type: string
+        - name: interval
+          in: path
+          required: true
+          description: "Time frame. Default: 1Day. Supported values are 1MINUTE, 5MINUTE, 10MINUTE, 30MINUTE, 60MINUTE, 1DAY, 1WEEK, and 1MONTH."
+          schema:
+            type: string
+        - name: parameters
+          in: query
+          required: true
+          schema:
+            type: object
             additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponse'
+components:
+  schemas:
+    BaseErrorResponse:
+      type: object
+      properties:
+        success:
+          description: "true: success; <br> false: failure"
+          example: true
+          type: boolean
+        requestId:
+          description: "Unique ID generated for each request, for tracking purpose."
+          example: null
+          type: string
+        error:
+          $ref: '#/components/schemas/ErrorPayload'
+    ErrorPayload:
+      type: object
+      properties:
+        code:
+          description: "API response code."
+          example: 400
+          type: integer
+          format: int32
+        message:
+          type: string
+          description: "Message corresponding to `code`."
+          example: "Client error"
+    UpdateOrderModel:
+      type: object
+      properties:
+        token:
+          description: "Unique identifier within an exchange"
+          example: 13528
+          type: integer
+          format: int32
+        exchange:
+          description: "Exchange to which the order is associated."
+          example: "bse_index"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        quantity:
+          description: "Order quantity"
+          example: 2
+          type: integer
+          format: int32
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)."
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        price:
+          description: "Order price"
+          example: 31
+          type: number
+        stopLoss:
+          description: "A pre-defined price to buy or sell a stock when it reaches a certain price. Use in case the product is OCO or stop loss order."
+          example: 20
+          type: number
+        stopLossDelta:
+          description: "An absolute number that acts as a stop-loss for CO (cover order) and OCO (One-Cancels-Other) positions."
+          example: 5
+          type: number
+        squareOffDelta:
+          description: "Square off delta"
+          example: 10
+          type: number
+        trailingTick:
+          description: "Indicates the number of ticks if the order placed was a trailing order. <br> **Note**: Use in case the product is OCO"
+          example: 5
+          type: integer
+          format: int32
+        side:
+          description: "Represents 'Buy' (B) or 'Sell' (S)"
+          example: "B"
+          type: string
+          enum:
+            - B
+            - S
+        validity:
+          description: "Validity of the order"
+          example: "D"
+          type: string
+        isAmo:
+          description: "true: AMO order; <br> false: Not an AMO order"
+          example: false
+          type: boolean
+        order_number:
+          description: "System-generated order ID"
+          example: "220626000000669"
+          type: string
+        exchange_order_id:
+          description: "Unique order ID assigned by the exchange for the order placed"
+          example: "1100000013832390"
+          type: string
+        syom_order_id:
+          type: string
+          description: "Parent order ID applicable in case of CO and OCO order"
+          example: "NA"
+        order_type:
+          description: "Order type <br> **Note**: <br> 1) M: market order <br> 2) L: Limit Order <br> 3) SL: Stop Loss Limit <br> 4) SL-M: Stop Loss Market."
+          example: "L"
+          type: string
+          enum:
+            - M
+            - L
+            - SL
+            - SL-M 
+        trigger_price:
+          description: "Trigger price or amount set on the order. It's a pre-set price or amount on a special buy or sell orders such as Limit order, Stop-Loss order, Stop-Loss Limit order, Stop-Loss Market order, Cover order, Bracket order, OCO order, etc. to either maximize profits or minimize loss."
+          example: 3
+          type: number
+        disclosed_quantity:
+          description: "Quantity to be disclosed on the order. Disclosed quantity or DQ order is a special type of order where only a part of the actual quantity (buy or sell) is displayed to the market. Ideally used to mask a large order size so that demand and price of the ordered stock do not rise up and protects users from paying higher prices for their orders."
+          example: 100
+          type: integer
+          format: int32
+        old_quantity:
+          description: "Old quantity"
+          example: 2
+          type: integer
+          format: int32
+    UpdateOrderRequestModelUpdateOrderModel:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UpdateOrderModel'
+    PlaceOrderModel:
+      type: object
+      properties:
+        token:
+          description: "Unique identifier within an exchange"
+          example: 13528
+          type: integer
+          format: int32
+        exchange:
+          description: "Exchange to which the order is associated."
+          example: "bse_index"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        quantity:
+          description: "Order quantity "
+          example: 1
+          type: integer
+          format: int32
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)."
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        price:
+          description: "Price at which the order is placed."
+          example: 32.00
+          type: number
+        stopLoss:
+          description: "A pre-defined price to buy or sell a stock when it reaches a certain price. Use in case the product is OCO or stop loss order."
+          example: 20
+          type: number
+        stopLossDelta:
+          description: "An absolute number that acts as a stoploss for CO (Cover Order) and OCO (One-Cancels-Other) positions"
+          example: 30
+          type: number
+          format: double
+        squareOffDelta:
+          example: null
+          type: number
+        trailingTick:
+          description: "Indicates the number of ticks if the order placed is a trailing order. Use in case the product is OCO"
+          example: 5
+          type: integer
+          format: int32
+        isAmo:
+          description: "true: AMO order; <br> false: Not an AMO order"
+          example: false
+          type: boolean
+        order_type:
+          description: "Order type. <br> 1) M: market order <br> 2) L: Limit Order <br> 3) SL: Stop Loss Limit <br> 4) SL-M: Stop Loss Market."
+          example: "M"
+          type: string
+          enum:
+            - "M"
+            - "L"
+            - "SL"
+            - "SL-M"
+        trigger_price:
+          description: "Trigger price or amount set on the order. It's a pre-set price or amount on a special buy or sell orders such as Limit order, Stop-Loss order, Stop-Loss Limit order, Stop-Loss Market order, Cover order, Bracket order, OCO order, etc. to either maximize profits or minimize loss."
+          example: 5
+          type: number
+        disclosed_quantity:
+          description: "Quantity to be disclosed on the order. Disclosed quantity or DQ order is a special type of order where only a part of the actual quantity (buy or sell) is displayed to the market. Ideally used to mask a large order size so that demand and price of the ordered stock do not rise up and protects users from paying higher prices for their orders."
+          example: 100
+          type: integer
+          format: int32
+        transaction_type:
+          description: "Represents Buy (B) or Sell (S) order"
+          example: "B"
+          type: string
+          enum:
+            - "B"
+            - "S"
+        duration:
+          description: "Validity of the order. Day indicates valid for the day. Similarly, IOC is Immediate or Cancel, and GTD is Good till date."
+          example: "DAY"
+          type: string
+          enum:
+            - "DAY"
+            - "IOC"
+            - "GTD"
+    PlaceOrderReqModelPlaceOrderModel:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlaceOrderModel'
+    BaseSuccessResponse:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of API execution"
+          example: "2022-06-28T18:09:45+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: object
+          properties: {}
+    BaseRequestBodyOpaqueTokenRequestBody:
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OpaqueTokenRequestBody'
+    OpaqueTokenRequestBody:
+      type: object
+      properties:
+        code:
+          description: "Authorization token"
+          example: "_fskjf"
+          type: string
+        redirectUri:
+          description: "URL to which the Upstox login service redirects to authorize user using the authorization code."
+          example: "https://developertest.domian.com/auth"
+          type: string
+    BaseSuccessResponseListTradeBookModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of endpoint execution"
+          example: "2022-06-28T18:09:45+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
           items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
+            $ref: '#/components/schemas/TradeBookModel'
+    OrderNumberModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange order number"
+          example: "1100000001913926"
+          type: string
+        oms:
+          description: "Order management system"
+          example: "220628000078404"
+          type: string
+        tradeId:
+          description: "Trade ID generated from the exchange for the traded transaction"
+          example: "25410654"
+          type: string
+    TradeBookModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "NSE_EQ"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        side:
+          description: "Represents 'Buy' (B) or 'Sell (S)"
+          example: "B"
+          type: string
+          enum:
+            - B
+            - S
+        timestamp:
+          description: "Time in microseconds (Unix Epoch)"
+          example: 1656388906918
+          type: integer
+          format: int64
+        price:
+          description: "Traded price"
+          example: 31.4
+          type: number
+        qty:
+          description: "Traded quantity"
+          example: 1
+          type: integer
+          format: int32
+        orderNumber:
+          $ref: '#/components/schemas/OrderNumberModel'
+    BaseSuccessResponseListPositionResponseModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of endpoint execution"
+          example: "2022-06-28T18:09:52+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
           items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+            $ref: '#/components/schemas/PositionResponseModel'
+    PositionResponseModel:
+      type: object
+      properties:
+        symbol:
+          description: "Trading symbol, which may be a combination of symbol name, instrument, expiry date, etc."
+          example: "IDBI"
+          type: string
+        token:
+          description: "Unique identifier within an exchange"
+          example: "1476"
+          type: string
+        close_price:
+          description: "Close price of the previous trading session"
+          example: null
+          type: string
+        last_traded_price:
+          description: "Last traded price of the symbol"
+          example: null
+          type: string
+          nullable: true
+        realized_profit:
+          description: "Day PnL (Profit and Loss) generated against closed positions"
+          example: null
+          type: string
+        unrealized_profit:
+          description: "Day PnL (Profit and Loss) generated against open positions. It's a notional value and changes based on `last_traded_price` of the symbol."
+          example: null
+          type: string
+        cf_avg_price:
+          description: "Consolidated price across all the carry forward (CF) orders <br> **Note**: Corporate actions are not taken into account"
+          example: null
+          type: string
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "bse_index"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)"
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        buy_amount:
+          description: "Amount at which the quantity was bought during the day"
+          example: "31.40"
+          type: string
+        buy_quantity:
+          description: "Quantity bought during the day"
+          example: 1
+          type: integer
+          format: int32
+        cf_buy_amount:
+          description: "Amount at which the quantity was bought in the previous session"
+          example: "5060.00"
+          type: string
+        cf_buy_quantity:
+          description: "Quantity bought in the previous trading session"
+          example: 1
+          type: integer
+          format: int32
+        cf_sell_amount:
+          description: "Amount at which the quantity was sold in the previous trading session"
+          example: "0"
+          type: string
+        cf_sell_quantity:
+          description: "Quantity sold short in the previous trading session"
+          example: 0
+          type: integer
+          format: int32
+        net_quantity:
+          description: "Quantity left after nullifying Day and CF buy quantity towards Day and CF sell quantity"
+          example: 1
+          type: integer
+          format: int32
+        sell_amount:
+          description: "Amount at which the quantity is sold during the day"
+          example: "0"
+          type: string
+        sell_quantity:
+          description: "Quantity sold during the day"
+          example: 0
+          type: integer
+          format: int32
+    BaseSuccessResponseListHoldingsResponseModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of endpoint execution"
+          example: "2022-06-28T18:09:52+05:30"
+          type: string
+        message:
+          description: "Message corresponding to `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HoldingsResponseModel'
+    HoldingInstrumentModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "NSE_EQ"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        symbol:
+          description: "Trading symbol, which could be a combination of symbol name, instrument, expiry date, etc."
+          example: "BSE"
+          type: string
+        token:
+          description: "Unique identifier within an exchange"
+          example: "19585"
+          type: string
+    HoldingsResponseModel:
+      type: object
+      properties:
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)"
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        collateral_type:
+          description: "Collateral category assigned by RMS (Risk Management System)"
+          example: "WC"
+          type: string
+        cnc_used_quantity:
+          description: "Quantity blocked towards either open or completed order"
+          example: 0
+          type: integer
+          format: int32
+        quantity:
+          description: "Total holding quantity"
+          example: 5
+          type: integer
+          format: int32
+        collateral_qty:
+          description: "Quantity marked as collateral by RMS (Risk Management System) upon users request"
+          example: 0
+          type: integer
+          format: int32
+        haircut:
+          description: "Haircut percentage applied from RMS (Risk Management System). Applicable in case of collateral. <br> **Note**: Haircut is the difference between the current market value of a security and its value calculated for pledging as collateral."
+          example: 0
+          type: integer
+          format: int64
+        avg_price:
+          description: "A consolidated price across all the orders placed for the scrip (symbol) <br> **Note**: Corporate actions are not taken into account"
+          example: 20
+          type: string
+        instrument:
+          type: array
+          items:
+            $ref: '#/components/schemas/HoldingInstrumentModel'
+    BalanceSecurityModel:
+      type: object
+      properties:
+        used_margin:
+          description: "Total amount utilized against any open or closed positions <br> **Note**: <br> 1) When an order request is placed, the required margins is deducted from the 'Available to trade' value and is added to 'used margin' <br> 2) Positive value indicates the amount is blocked into an open order or position and negative value indicates the amount is released"
+          example: 31.4
+          type: number
+        payin_amount:
+          description: "Reflects the funds transferred to  trading account"
+          example: 0
+          type: number
+        span_margin:
+          description: "Amount blocked on futures and options towards Standard Portfolio Analysis of Risk (SPAN). <br> **Note**: SPAN is used by exchanges to calculate risk and margins for F&O portfolios."
+          example: 0
+          type: number
+        adhoc_margin:
+          description: "Payin amount credited through a manual process. <br> **Note**: Adhoc margin is collected by the Stock Exchange from the users having unduly large outstanding position or the margin levied on volatile scrips based on adhoc basis keeping in view the risk perspective."
+          example: 0
+          type: number
+        notional_cash:
+          description: "Amount maintained for withdrawal"
+          example: 0
+          type: number
+        available_margin:
+          description: "Total margin available for trading"
+          example: 4567.84
+          type: number
+        exposure_margin:
+          description: "Amount blocked on futures and options towards Exposure"
+          example: 0
+          type: number
+    BaseSuccessResponseMapStringBalanceSecurityModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of endpoint execution"
+          example: "2022-06-28T18:09:31+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BalanceSecurityModel'
+    BaseSuccessResponseListOrderHistoryModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of API execution"
+          example: "2022-06-28T18:08:33+05:30"
+          type: string
+        message:
+          description: "Message corresponding to `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderHistoryModel'
+    OrderHistoryModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "NSE_EQ"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        token:
+          description: "Unique identifier within an exchange"
+          example: 13528
+          type: integer
+          format: int32
+        symbol:
+          description: "Trading symbol, which could be a combination of symbol name, instrument, expiry date, etc."
+          example: "GMRINFRA-EQ"
+          type: string
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)."
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        orderType:
+          description: "Order type. <br> **Note**: <br> 1) M: market order <br> 2) L: Limit Order <br> 3) SL: Stop Loss Limit <br> 4) SL-M: Stop Loss Market"
+          example: null
+          type: string
+          enum:
+            - "M"
+            - "L"
+            - "SL"
+            - "SL-M"
+          nullable: true
+        duration:
+          description: "Validity of the order. Day indicates valid for the day. Similarly IOC is Immediate or Cancel, and GTD is Good till date"
+          example: "DAY"
+          type: string
+          enum:
+            - "DAY"
+            - "IOC"
+            - "GTD"
+        price:
+          description: "Order price"
+          example: "32.00"
+          type: string
+        quantity:
+          description: "Order quantity"
+          example: 1
+          type: integer
+          format: int32
+        message:
+          description: "Message corresponding to the `status`"
+          example: null
+          type: string
+        status:
+          description: "Order status"
+          example: "Request received after market hours" 
+          type: string
+        trigger_price:
+          description: "Trigger price or amount set on the order. It's a pre-set price or amount on a special buy or sell orders such as Limit order, Stop-Loss order, Stop-Loss Limit order, Stop-Loss Market order, Cover order, Bracket order, OCO order, etc. to either maximize profits or minimize loss."
+          example: 3
+          type: number
+        disclosed_quantity:
+          description: "Quantity to be disclosed on the order. Relevant only for large orders where only a part of the actual quantity (buy or sell) must be displayed to the market. Ideally used to mask a large order size so that demand and price of the ordered stock do not rise up and protects users from paying higher prices for their orders."
+          example: 100
+          type: integer
+          format: int32
+        transaction_type:
+          description: "Represents Buy (B) or Sell (S)"
+          example: "B"
+          type: string
+          enum:
+            - B
+            - S
+        traded_quantity:
+          description: "Traded quantity"
+          example: 20
+          type: integer
+          format: int32
+        exchange_order_id:
+          description: "Unique order ID assigned by the exchange for the order placed"
+          example: null
+          type: string
+        parent_order_id:
+          description: "Order ID of the parent order. Applicable for multi-legged order when the order is part of the second or third leg of a CO or OCO order ."
+          example: null
+          type: string
+          nullable: true
+        order_id:
+          description: "Unique order ID"
+          example: "220628000622374"
+          type: string
+        exchange_time:
+          description: "Human-readable timestamp at which the order was placed or last updated"
+          example: "28-June-2022 12:42:42"
+          type: string
+        time_in_micro:
+          description: "Time in microseconds (Unix Epoch) at which the order was placed or last updated"
+          example: "1656419584308815"
+          type: string
+        is_amo:
+          description: "true: AMO order; <br> false: Not an AMO order <br> **Note**: Upstox AMO (After-market Order) enables users to place order after the market closes"
+          example: true
+          type: boolean
+        valid_date:
+          description: "Valid date. Applicable for a GTD (Good-Till-Date) order"
+          example: null
+          type: string
+        order_request_id:
+          description: "Excluding the first order, shows the count of requests sent"
+          example: null
+          type: string
+        average_price:
+          description: "Average price at which the order was traded"
+          example: "0"
+          type: string
+    BaseSuccessResponseListOrderDetailsModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of endpoint execution"
+          example: "2022-06-28T18:08:33+05:30"
+          type: string
+        message:
+          description: "Message corresponding to `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDetailsModel'
+    OrderDetailsModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "NSE_EQ"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        token:
+          description: "Unique identifier within an exchange"
+          example: 13528
+          type: integer
+          format: int32
+        symbol:
+          description: "Trading symbol, which may be a combination of symbol name, instrument, expiry date, etc."
+          example: "GMRINFRA-EQ"
+          type: string
+        product:
+          description: "Represents if the order is Intraday (I), Delivery (D), Cover Order (CO) or One-Cancels-Other (OCO)."
+          example: "D"
+          type: string
+          enum:
+            - I
+            - D
+            - CO
+            - OCO
+        duration:
+          description: "Validity of the order. Day indicates valid for the day. Similarly, IOC is Immediate or Cancel and GTD is Good till date."
+          example: "DAY"
+          type: string
+          enum:
+            - "DAY"
+            - "IOC"
+            - "GTD"
+        price:
+          description: "Order price"
+          example: "32.00"
+          type: string
+        quantity:
+          description: "Order quantity"
+          example: 1
+          type: integer
+          format: int32
+        message:
+          description: "Message corresponding to `status`"
+          example: "Your Trigger Price is outside the range of your Limit Price"
+          type: string
+        status:
+          description: "order status"
+          example: "validation pending"
+          type: string
+        report:
+          example: null
+          type: string
+        text:
+          example: null
+          type: string
+        order_type:
+          description: "Order type. <br> **Note**: <br> 1) M: Market Order <br> 2) L: Limit Order <br> 3) SL: Stop Loss Limit <br> 4) SL-M: Stop Loss Market Order"
+          example: "M"
+          type: string
+          enum:
+            - "M"
+            - "L"
+            - "SL"
+            - "SL-M"
+        trigger_price:
+          description: "Trigger price or amount. <br> **Note**: It's a pre-set price or amount on a special buy or sell orders such as Limit Order, Stop-Loss Order, Stop-Loss Limit Order, Stop-Loss Market Order, Cover Order, Bracket Order, OCO order, etc. to either maximize profits or minimize loss."
+          example: 3
+          type: number
+        disclosed_quantity:
+          description: "Quantity to be disclosed on the order. <br> **Note**: Disclosed quantity or DQ order is a special type of order where only a part of the actual quantity (buy or sell) is displayed to the market. Typically, used to mask a large order size so that demand and price of the ordered stock do not rise up and protects users from paying higher prices for their orders."
+          example: 100
+          type: integer
+          format: int32
+        side:
+          description: "Represents 'Buy' (B) or 'Sell' (S)"
+          example: "Sell"
+          type: string
+        avg_price:
+          description: "A consolidated price across all the orders placed for the scrip **Note**: Corporate actions are not taken into account"
+          example: 20
+          type: number
+        traded_quantity:
+          description: "Total quantity traded from this particular order"
+          example: 20
+          type: integer
+          format: int32
+        exchange_order_id:
+          description: "Always blank. Unique order ID assigned by the exchange for the order placed"
+          example: "1100000000006972"
+          type: string
+        syom_order_id:
+          description: "Parent order ID applicable in case of CO and OCO order"
+          example: "440626000000622"
+          type: string
+        orderRefId:
+          description: "Reference ID of the order"
+          example: "26574986221560775"
+          type: string
+        exchange_timestamp:
+          description: "Human-readable timestamp at which the order was placed or last updated"
+          example: "28-June-2022 12:42:42"
+          type: string
+        time_in_micro:
+          description: "Time in microseconds (Unix Epoch) at which the order was placed or last updated"
+          example: "1656388906918"
+          type: string
+        is_amo:
+          description: "true: AMO order; <br> false: Not an AMO order <br> **Note**: Upstox AMO (After-market Order) enables users to place order after the market closes"
+          example: true
+          type: boolean
+        valid_date:
+          description: "Valid date. Applicable for a GTD (Good-Till-Date) order"
+          example: null
+          type: string
+        fill_leg:
+          description: "Represents the leg number in CO or multi-leg orders"
+          example: null
+          type: string
+        request_id:
+          description: "Unique ID generated for each request, for tracking purpose"
+          example: "1"
+          type: string
+    BaseSuccessResponseListOrderTradesModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of API execution"
+          example: "2022-06-28T18:09:45+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderTradesModel'
+    OrderTradesModel:
+      type: object
+      properties:
+        exchange:
+          description: "Exchange to which the order is associated"
+          example: "bse_index"
+          type: string
+          enum: 
+            - bse_index
+            - nse_index
+            - bse_eq
+            - bcd_fo
+            - nse_eq
+            - bse_eq
+            - nse_fo
+            - ncd_fo
+            - mcx_fo
+        side:
+          description: "Represents 'Buy' (B) or 'Sell' (S)"
+          example: "Sell"
+          type: string
+          enum:
+            - B
+            - S
+        timestamp:
+          description: "Time in microseconds (Unix Epoch)"
+          example: 1656388906918
+          type: integer
+          format: int64
+        price:
+          description: "Traded price"
+          example: 31.4
+          type: number
+        qty:
+          description: "Traded quantity"
+          example: 1
+          type: integer
+          format: int32
+        orderNumber:
+          $ref: '#/components/schemas/OrderNumberModel'
+    BaseSuccessResponseProfileResponseModel:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of API execution"
+          example: "2022-06-28T18:11:19+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          $ref: '#/components/schemas/ProfileResponseModel'
+    ProfileResponseModel:
+      type: object
+      properties:
+        client_id:
+          description: "6-character user ID"
+          example: "200247"
+          type: string
+        name:
+          description: "User name"
+          example: "Sam"
+          type: string
+        email:
+          description: "Email address of user"
+          example: "demo@gmail.com"
+          type: string
+        phone:
+          description: "Contact number of the client"
+          example: "9940133766"
+          type: string
+        exchanges_enabled:
+          description: "List of exchanges accessible to client"
+          example: ["BSE_EQ", "NSE_EQ"]
+          type: array
+          items:
+            type: string
+          enum: 
+            - "BSE_EQ"
+            - "NSE_EQ"
+            - "NSE_FO"
+            - "MCX_FO"
+            - "NCD_FO"
+            - "BCD_FO"
+        products_enabled:
+          description: "List of products types accessible to client. <br> **Note**: <br> 1) OCO (One-Cancels-Other) order is a pair of conditional orders where, if one order gets executed, then the other order is automatically cancelled <br> 2) CO is a special order type that has a market order and a stop-loss market order attached to it. In this, the first leg is always a limit/market order; once executed, the second leg (the stop-loss market order) is placed."
+          example: 
+            - "OCO"
+            - "D"
+          type: array
+          items:
+            type: string
+          enum:
+            - "OCO"
+            - "D"
+            - "CO"
+            - "I"
+    BaseSuccessResponseString:
+      type: object
+      properties:
+        code:
+          description: "API response code"
+          example: 200
+          type: integer
+          format: int32
+        status:
+          description: "Status corresponding to the `code`"
+          example: "Ok"
+          type: string
+        timestamp:
+          description: "Timestamp of API execution"
+          example: "2022-06-28T18:11:19+05:30"
+          type: string
+        message:
+          description: "Message corresponding to the `code`"
+          example: "Success"
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+            properties: {}
