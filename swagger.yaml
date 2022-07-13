@@ -111,7 +111,7 @@ paths:
         '200':
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseProfileResponseModel'
         '401':
@@ -212,7 +212,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
@@ -246,7 +246,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
@@ -280,7 +280,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
@@ -320,7 +320,7 @@ paths:
         '200':
           description: Successful Operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseString'
         '401':
@@ -352,7 +352,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseListOrderHistoryModel'
         '401':
@@ -390,7 +390,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseListOrderDetailsModel'
         '401':
@@ -433,7 +433,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseString'
         '401':
@@ -470,7 +470,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseString'
         '401':
@@ -508,7 +508,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+           application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseListOrderTradesModel'
         '401':
@@ -541,7 +541,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseListTradeBookModel'
         '401':
@@ -599,7 +599,7 @@ paths:
         '200':
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponse'
 components:
