@@ -3,34 +3,34 @@ info:
   title: Upstox trading API interface
   version: 1.0.0
   description: |
-    Upstox REST APIs makes trading simple, affordable, and accessible. Using them, you can build your own trading application with winning strategies. They enable you to connect to stock market directly, get high-speed market data on tick basis (up to 5 updates per second mainly required for Nifty and BankNifty), and place orders real time. Upstox uses Amazon Webservices to provide you uninterrupted service even on peak market activities. You also get live socket connection for instant notification and updates. <br> <br> There are two types of APIs for developers: <br> 1) **Interactive** order management APIs. They provide details of orders, positions, holdings, price, quantity, etc. <br> 2) **Historical** API. They provide Open, High, Low, and Close (OHLC) data for different time intervals ranging from one min to one month. <br> <br> **Rate Limiting** defines the number of API calls that can be made within a specified time period. Rate limits are imposed on every app. The 'limit-exceeding' requests will fail and will return `429 - Too Many Requests` error. <br><br> Here are the details of the Rate Limit set for each endpoint
+    Upstox REST APIs makes trading simple, affordable, and accessible. Using them, you can build your own trading application with winning strategies. They enable you to connect to stock market directly, get high-speed market data on tick basis (up to 5 updates per second mainly required for Nifty and BankNifty), and place orders real time. Upstox uses Amazon Webservices to provide you uninterrupted service even on peak market activities. You also get live socket connection for instant notification and updates. <br> <br> There are two types of APIs for developers: <br> 1) **Interactive** order management APIs. They provide details of orders, positions, holdings, price, quantity, etc. <br> 2) **Historical** API. They provide Open, High, Low, and Close (OHLC) data for different time intervals ranging from one min to one month. <br> <br> To use the APIs, we provide SDKs in `Javascript` and `Python`. You can create SDK in other languages such as `.Net`<br> <br>**Rate Limiting** defines the number of API calls that can be made within a specified time period. Rate limits are imposed on every app. The 'limit-exceeding' requests will fail and will return `429 - Too Many Requests` error. <br><br> Here are the details of the Rate Limit set for each endpoint
   
-    | Enpoints						      |	Ratelimit		       |	
+    | Enpoints                  |  Ratelimit           |  
     |---------------------------|--------------------|
-    | Positions 		 			      |	1 request/second   |
-    | Holdings 		 				      |	1 request/second   |
-    | Orders History 				    | 1 request/second   |
-    | Orders Details  			    |	1 request/second   |
-    | Trade Book 					      |	1 request/second   |
-    | Trade History 				    |	1 request/second   |
-    | Place Order  					    |	10 request/second  |
-    | Modify Order  				    |	1 request/second   |
-    | Cancel Order 					    |	1 request/second   |
-    | Live Feed 					      | 1 request/second   |
-    | Subscribe  					      |	1 request/second   |
-    | Unsubscribe 		 			    |	1 request/second   |
-    | Fetch Subscribed Symbols	|	1 request/second   |
-    | OHLC 		 					        |	10 request/second  |
+    | Positions                  |  1 request/second   |
+    | Holdings                    |  1 request/second   |
+    | Orders History             | 1 request/second   |
+    | Orders Details            |  1 request/second   |
+    | Trade Book                 |  1 request/second   |
+    | Trade History             |  1 request/second   |
+    | Place Order                |  10 request/second  |
+    | Modify Order              |  1 request/second   |
+    | Cancel Order               |  1 request/second   |
+    | Live Feed                 | 1 request/second   |
+    | Subscribe                  |  1 request/second   |
+    | Unsubscribe                |  1 request/second   |
+    | Fetch Subscribed Symbols  |  1 request/second   |
+    | OHLC                        |  10 request/second  |
 servers:
   - url: https://api.upstox.com
 paths:
   /index/dialog/authorize:
     get:
       tags:
-        - access
+        - Access
       summary: Authorize user
       description: |
-        Authorizes a user. Initial authentication requires access to a web browser to authorize the program using your client ID (six digit UCC), trading password, and year of birth. Whether your program runs on a GUI or a console, you must use the web browser to create an access token, which then allows you to use the APIs. <br> **Note**: The access token has a validity of 24 hours so you have to authenticate yourself only once a day. All access tokens are cleared between 5 AM to 6 AM in the morning. Hence, it's recommend you regenerate the access token after 6 AM. Once you generate your access token, you can store it and bypass authentication for subsequent calls. <br> Follow these steps for authorization: <br> 1) Open web browser and go to the login URL - https://api.upstox.com/index/dialog/authorize?apiKey={your_api_key}&redirect_uri={your_redirect_uri}&response_type=code. On the libraries, you can get this URL by setting the apiKey and then calling the getLoginUri function with the redirect_uri as a parameter. <br> **Note**: redirect_uri used must match the redirect_uri specified in the App settings of the Developer Console. <br> 2) Once redirected, it opens the Upstox login page to enter your UCC, password, and date of birth to authenticate yourself. <followed by three-images> <br> 3) Once PIN is accepted, Upstox redirects you to the redirectUri that was sent in step 1 with a parameter called `code`. This step must be done in your backend app server.
+        Authorizes a user. Initial authentication requires access to a web browser to authorize the program using your `client ID` (six digit UCC), trading `password`, and `year of birth`. Whether your program runs on a GUI or a console, you must use the web browser to create an access token, which then allows you to use the APIs. <br> **Note**: The access token has a validity of 24 hours so you have to authenticate yourself only once a day. All access tokens are cleared between 5 AM to 6 AM in the morning. Hence, it's recommend you regenerate the access token after 6 AM. Once you generate your access token, you can store it and bypass authentication for subsequent calls. <br> Follow these steps for authorization: <br> 1) Open web browser and go to the login URL - https://api.upstox.com/index/dialog/authorize?apiKey={your_api_key}&redirect_uri={your_redirect_uri}&response_type=code. On the libraries, you can get this URL by setting the apiKey and then calling the `getLoginUri` function with the `redirect_uri` as a parameter. <br> **Note**: redirect_uri used must match the redirect_uri specified in the App settings of the Developer Console. <br> 2) Once redirected, it opens the Upstox login page to enter your `UCC`, `password`, and `date of birth` to authenticate yourself. <followed by three-images> <br> 3) Once PIN is accepted, Upstox redirects you to the redirectUri that was sent in step 1 with a parameter called `code`. This step must be done in your backend app server.
         
           ![OAUth](https://upstox.com/developer/api/v2/docs/images/oAuth.png)
       operationId: authorize
@@ -57,7 +57,7 @@ paths:
   /index/oauth/token:
     post:
       tags:
-        - access
+        - Access
       summary: Get token
       description: "Authentication is done via oAuth prcoess. With the newly generated `code` from your backend app server (based on steps 1 to 3 specified in the GET /index/dialog/authorize), you need to now generate an access token. <br> 4) To get the access token, then you need to call following URL https://api.upstox.com/index/oauth/token and pass the following parameters: api_key, api_secret along with the `code` shared in the previous step. This returns you the accessToken for your backend app server. <br> 5) Return this accessToken to your app via the response of your redirectUri. For future requests to the app, use the accessToken as your authorization bearer token. If you are using the library, set the accessToken received to Upstox object by using the `setAccessToken` method. This will ensure all your future requests use this accessToken, and you get the necessary permissions. <br> **Note**: The accessToken is valid until the next trading day."
       operationId: opaqueToken
@@ -90,7 +90,7 @@ paths:
   /index/profile:
     get:
       tags:
-        - users
+        - Users
       summary: Get user profile
       description: "Gets the basic contact details along with the exchanges and products enabled for the user."
       operationId: getProfile
@@ -123,7 +123,7 @@ paths:
   /live/profile/positions:
     get:
       tags:
-        - users
+        - Users
       summary: "Get positions"
       description: "Gets current positions of a user for the current day. <br> **Note**: Holdings contain portfolio of users delivery based equity stocks. They remain in holdings until the user sells or the stock gets delisted"
       operationId: getPositions
@@ -157,7 +157,7 @@ paths:
   /live/profile/holdings:
     get:
       tags:
-        - users
+        - Users
       summary: Get holdings
       description: "Gets holdings the user has bought or sold in the previous trading sessions. <br> **Note**: Holdings contains portfolio of user's delivery-based equity stocks. They remain in holdings until they are sold or the stock gets delisted."
       operationId: getHoldings
@@ -191,7 +191,7 @@ paths:
   /live/profile/balance/security:
     get:
       tags:
-        - users
+        - Users
       summary: "Get security balance"
       description: "Gets available and used balance 'funds' and 'margins' of a user in the equity market."
       operationId: getSecurityBalance
@@ -225,7 +225,7 @@ paths:
   /live/profile/balance/com:
     get:
       tags:
-        - users
+        - Users
       summary: "Get commodity balance"
       description: "Gets the available and used balance - 'funds' and 'margins' of a user in the commodity market"
       operationId: getCommodityBalance
@@ -259,7 +259,7 @@ paths:
   /live/profile/balance/all:
     get:
       tags:
-        - users
+        - Users
       summary: "Get all balance - commodity and equity"
       description: "Gets the available and used balance - funds and margins of a user in both the equity and commodity market."
       operationId: getAllBalance
@@ -293,7 +293,7 @@ paths:
   /live/orders:
     post:
       tags:
-        - order
+        - Order
       summary: "Place order"
       description: "Places an order to the exchange via Upstox"
       operationId: placeOrder
@@ -331,7 +331,7 @@ paths:
                 $ref: '#/components/schemas/BaseErrorResponse'
     get:
       tags:
-        - order
+        - Order
       summary: "Get order book"
       description: "Order book (also called order history) lists all the orders that are placed and includes all states - open, pending, and filled. In addition, it returns all orders of the day and AMO orders (if any) from the previous day with their latest states - open, cancelled, and filled. <br> **Note**: Orders placed by a user is transient for a day and is cleared by the end of the trading session."
       operationId: orderBook
@@ -364,7 +364,7 @@ paths:
   /live/orders/{orderNumber}:
     get:
       tags:
-        - order
+        - Order
       summary: "Get order details, by order number"
       description: "Gets order details along with their states - open, pending, and filled. <br> **Note**: The order placed is transient for a day and is cleared by the end of the trading session"
       operationId: orderDetails
@@ -401,7 +401,7 @@ paths:
                 $ref: '#/components/schemas/BaseErrorResponse'
     put:
       tags:
-        - order
+        - Order
       summary: "Update order"
       description: "Updates Open and Pending orders. You may update the order quantity, price and/or order type. Along with the order_id you need to send the optional parameters that needs to be modified. Otherwise, their default values are used from the original order. <br> **Note**: `exchange`, `symbol`, and `side` cannot be modified"
       operationId: updateOrder
@@ -444,7 +444,7 @@ paths:
                 $ref: '#/components/schemas/BaseErrorResponse'
     delete:
       tags:
-        - order
+        - Order
       summary: "Cancel order"
       description: "Cancels an order in Open and Pending status. The primary use case is to cancel an open AMO or regular order or to exit a CO (cover order or multi-legged order) or OCO (bracket order)"
       operationId: cancelOrder
@@ -482,7 +482,7 @@ paths:
   /live/orders/{order-id}/trades:
     get:
       tags:
-        - order
+        - Order
       summary: Get trade details, by order-id
       description: "An order may be executed in multiple slots (referred to as legs). Each execution is referred as a trade. As a result, an order may have one or more trades. <br> This endpoint lists all the trades for the given order."
       operationId: orderTrades
@@ -520,7 +520,7 @@ paths:
   /live/trade-book:
     get:
       tags:
-        - order
+        - Order
       summary: "Get trade book"
       description: "An order may be executed in multiple slots (referred to as legs). Each execution is referred as a trade. As a result, an order may have one or more trades. <br> This endpoint lists all trades for the current day. <br> **Note**: Trade book gets all transactions that are completed. It excludes cancelled or pending orders."
       operationId: tradeBook
@@ -553,7 +553,7 @@ paths:
   /historical/{exchange}/{symbol}/{interval}:
     get:
       tags:
-        - historical data
+        - Historical data
       summary: Get historical data
       description: "Gets open, close, high, and Low data for different time intervals ranging from one min to one month."
       operationId: getHistory
