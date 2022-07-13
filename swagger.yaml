@@ -646,8 +646,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -758,8 +757,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -932,8 +930,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -1025,8 +1022,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -1116,8 +1112,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -1264,8 +1259,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -1416,8 +1410,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
@@ -1573,8 +1566,7 @@ components:
             - nse_index
             - bse_eq
             - bcd_fo
-            - nse_eq
-            - bse_eq
+            - nse_eq            
             - nse_fo
             - ncd_fo
             - mcx_fo
