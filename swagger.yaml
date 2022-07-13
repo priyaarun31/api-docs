@@ -483,7 +483,7 @@ paths:
     get:
       tags:
         - Order
-      summary: Get trade details, by order-id
+      summary: Get trades, by order-id
       description: "An order may be executed in multiple slots (referred to as legs). Each execution is referred as a trade. As a result, an order may have one or more trades. <br> This endpoint lists all the trades for the given order."
       operationId: orderTrades
       parameters:
