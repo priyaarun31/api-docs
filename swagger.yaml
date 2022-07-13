@@ -111,7 +111,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseProfileResponseModel'
         '401':
@@ -178,7 +178,7 @@ paths:
         '200':
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseListHoldingsResponseModel
