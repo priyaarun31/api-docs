@@ -23,7 +23,7 @@ info:
     | Fetch Subscribed Symbols  |  1 request/second   |
     | OHLC                        |  10 request/second  |
 servers:
-  - url: https://api.upstox.com
+  - url: https://uat-live-api.upstox.com
 paths:
   /index/dialog/authorize:
     get:
