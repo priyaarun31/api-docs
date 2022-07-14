@@ -1,4 +1,3 @@
-
 openapi: 3.0.1
 info:
   title: Upstox trading API interface
@@ -219,12 +218,27 @@ paths:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+              example:
+                code: 200
+                status: Ok
+                timestamp: '2022-06-28T18:09:31+05:30'
+                message: Success
+                data:
+                  equity:
+                    used_margin: 31.4
+                    payin_amount: 0
+                    span_margin: 0
+                    adhoc_margin: 0
+                    notional_cash: 0
+                    available_margin: 4567.84
+                    exposure_margin: 0
         '401':
           description: Authorization failure
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BaseErrorResponse'
+                
   /live/profile/balance/com:
     get:
       tags:
@@ -253,6 +267,20 @@ paths:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+              example:
+                code: 200
+                status: Ok
+                timestamp: '2022-06-28T18:09:31+05:30'
+                message: Success
+                data:
+                  commodity:
+                    used_margin: 31.4
+                    payin_amount: 0
+                    span_margin: 0
+                    adhoc_margin: 0
+                    notional_cash: 0
+                    available_margin: 4567.84
+                    exposure_margin: 0
         '401':
           description: Authorization failure
           content:
@@ -287,6 +315,28 @@ paths:
               schema:
                 $ref: >-
                   #/components/schemas/BaseSuccessResponseMapStringBalanceSecurityModel
+              example:
+                code: 200
+                status: Ok
+                timestamp: '2022-06-28T18:09:31+05:30'
+                message: Success
+                data:
+                  equity:
+                    used_margin: 31.4
+                    payin_amount: 0
+                    span_margin: 0
+                    adhoc_margin: 0
+                    notional_cash: 0
+                    available_margin: 4567.84
+                    exposure_margin: 0
+                  commodity:
+                    used_margin: 31.4
+                    payin_amount: 0
+                    span_margin: 0
+                    adhoc_margin: 0
+                    notional_cash: 0
+                    available_margin: 4567.84
+                    exposure_margin: 0
         '401':
           description: Authorization failure
           content:
@@ -326,6 +376,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseString'
+              example: 
+                code: 200
+                status: Ok
+                timestamp: 2022-06-28T18:09:45+05:30
+                message: Success
+                data: "Order: Ref4545413254 is placed sucessfully"
         '401':
           description: Authorization failure
           content:
@@ -439,6 +495,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponseString'
+              example: 
+                code: 200
+                status: Ok
+                timestamp: 2022-06-28T18:09:45+05:30
+                message: Success
+                data: "Order: Ref4545413254 is updated sucessfully"
         '401':
           description: Authorization failure
           content:
@@ -605,6 +667,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BaseSuccessResponse'
+              example: 
+                code: 200
+                status: Ok
+                timestamp: 2022-06-28T18:09:45+05:30
+                message: Success
+                data: 
+                  - 1541735100000,287,287,283,284.3,5646582
+                  - 1541738700000,284.3,287.35,284.2,285.85,4684886
+                  - 1541742300000,285.85,286.55,285.3,286.05,1663518
+                  - 1541745900000,286.05,286.05,283.55,284.1,1676312
+                  - 1541749500000,284,284.5,282.5,283.65,1897609
+                  - 1541753100000,283.55,284.25,282.85,283.6,2281085
+                  - 1541756700000,283.4,283.75,282.85,283.1,1340651
 components:
   schemas:
     BaseErrorResponse:
